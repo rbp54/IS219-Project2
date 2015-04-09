@@ -10,9 +10,8 @@ var csvParser = require('csv-parse');
 
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var colleges = require('./controllers/collegeController');
-var college = require('./routes/college');
+var uploads = require('./controllers/uploadController');
 var app = express();
 
 
@@ -30,18 +29,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer());
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/colleges', colleges);
-app.use('/colleges/:id', colleges);
-app.use('/upload', college);
-
-/** team stuff */
-var teams = require('./controllers/home-mongoose')
-app.use('/teams', teams);
-/** end team stuff */
+app.use('/colleges/:id', colleges.getCollegeById);
+app.use('/colleges', colleges.index);
+app.use('/upload', uploads.index);
 
 app.post("/uploads", function(req, res, next){
-  //console.log(req.files.myFile);
 
   /* CSV file parser*/
   var fs = require('fs');
@@ -58,9 +50,8 @@ app.post("/uploads", function(req, res, next){
                 if (err) {
                     console.log(err);
                 } else {
-                    var college_data = require('./model/college-data');
 
-                    college_data.upload(data, function() {
+                    uploads.upload(data, function() {
                         res.redirect('/colleges');
                     });
                 }
@@ -102,11 +93,10 @@ app.use(function(err, req, res, next) {
 
 var server = app.listen(3000, function () {
 
-    var host = server.address().address
-    var port = server.address().port
+    var host = server.address().address;
+    var port = server.address().port;
 
-    console.log('Example app listening at http://%s:%s', host, port)
-
+    console.log('Project2 listening at http://%s:%s', host, port)
 });
 
 module.exports = app;

@@ -1,40 +1,54 @@
-var college_data = require('../model/college-data');
-var express = require('express');
-var router = express.Router();
+var mongoose = require('mongoose'),
+    db = mongoose.connection;
 
-router.get('/', function(req, res, next) {
+db.on('error', console.error.bind(console, 'connection error:'));
 
-    college_data.collegelist(function(err, collegelist) {
-        if (!err) {
-            res.render('collegelist', {
-                colleges: collegelist
-            });
+var College = require('../model/college');
 
-        } else {
-            console.log('error', err);
-        }
-    })
-});
+exports.index = function(req, res, next) {
+    mongoose.connect('mongodb://localhost/colleges');
 
-router.get('/:id', function(req, res, next) {
+    db.once('open', function() {
+        College.find({}).select('_id INSTNM').lean().exec(function(err, colleges) {
+            if (err) {
+                console.log('err', err);
+                onErr(err);
+            } else {
+                mongoose.connection.close();
+
+                res.render('collegelist', {
+                    colleges: colleges
+                });
+            }
+        });
+    });
+};
+
+exports.getCollegeById = function(req, res, next) {
     var id = req.params.id;
 
-    college_data.getCollege(id, function(err, college) {
-        if (!err) {
+    mongoose.connect('mongodb://localhost/colleges');
 
-            delete college._id;
-            delete college.__v;
+    db.once('open', function() {
+        College.findOne({_id: id}).lean().exec(function(err, college) {
+            if (err) {
+                console.log('err', err);
+                onErr(err);
+            } else {
+                mongoose.connection.close();
 
-            res.render('college', {
-                college: college,
-                keys: Object.keys(college)
+                delete college._id;
+                delete college.__v;
 
-            });
-
-        } else {
-            console.log('error', err);
-        }
+                res.render('college', {
+                    college: college
+                })
+            }
+        });
     })
-});
+};
 
-module.exports = router;
+var onErr = function(err,callback) {
+    mongoose.connection.close();
+    callback(err);
+};
