@@ -1,14 +1,10 @@
 extends layout
 
 block content
-    each val, key in college
-        p
-            strong=key + ': '
-            span= val
-    //table(style='width:100%; border: 1px solid black; border-collapse: collapse;')
-    //    tr(style='border: 1px solid')
-    //    each val, index in keys
-    //        th(style='width:100px; border: 1px solid black; border-collapse: collapse; padding: 0 10px 0 10px')=val
-    //    tr(style='border: 1px solid')
-    //    each val, index in college
-    //        td(style='width:100px; border:1px solid; border-collapse: collapse; text-align :center')=val +':' + index
+    table.table.table-bordered.text-center
+        tr
+            each val, key in college
+                td= key
+        tr
+            each val, key in college
+                td= val

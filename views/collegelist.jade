@@ -1,6 +1,8 @@
 extends layout
 block content
-    ul
-    each college in colleges
-        li
-            a(href='/colleges/#{college._id}') #{college.INSTNM}
+    h2 Below are a list of colleges:
+    table.table.table-striped
+        each college in colleges
+            tr
+                td
+                    a(href='/colleges/#{college._id}') #{college.INSTNM}
