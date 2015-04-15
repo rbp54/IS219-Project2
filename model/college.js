@@ -72,7 +72,8 @@ var collegeSchema = new mongoose.Schema({
     COUNTYNM: String,
     CNGDSTCD: Number,
     LONGITUD: Number,
-    LATITUDE: Number
+    LATITUDE: Number,
+    enrollment: Object
 });
 
 var College = mongoose.model('College', collegeSchema);

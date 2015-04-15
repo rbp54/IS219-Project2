@@ -1,10 +1,16 @@
 extends layout
 
 block content 
-	p Welcome!!
-	form#fileUpload(method="post" action="/uploads" enctype="multipart/form-data") 
-		label(for="payload") Select a file to upload:     
-		input#payload(type="file" name="myFile") 
-		br
-		input(type='submit') 
-		
+    p Upload College Data Here:
+    form#fileUpload(method="post" action="/uploads/collegeData" enctype="multipart/form-data")
+        label(for="payload") Select a file to upload:
+        input#payload(type="file" name="myFile")
+        br
+        input(type='submit')
+    hr
+    p Upload Enrollment Data Here:
+    form#fileUpload(method="post" action="/uploads/enrollmentData" enctype="multipart/form-data")
+        label(for="payload") Select a file to upload:
+        input#payload(type="file" name="myFile")
+        br
+        input(type='submit')

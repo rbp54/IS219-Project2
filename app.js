@@ -29,35 +29,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer());
 
 app.use('/', routes);
+app.use('/colleges/:id/enrollment', colleges.getEnrollmentData);
 app.use('/colleges/:id', colleges.getCollegeById);
 app.use('/colleges', colleges.index);
 app.use('/upload', uploads.index);
 
-app.post("/uploads", function(req, res, next){
-
-  /* CSV file parser*/
-  var fs = require('fs');
-  fs.readFile(req.files.myFile.path, {
-            encoding: 'utf-8'
-        }, function(err, csvData) {
-            if (err) {
-                console.log(err);
-            }
-
-            csvParser(csvData, {
-                delimiter: ','
-            }, function(err, data) {
-                if (err) {
-                    console.log(err);
-                } else {
-
-                    uploads.upload(data, function() {
-                        res.redirect('/colleges');
-                    });
-                }
-            });
-        });
-});
+app.post('/uploads/collegeData', uploads.parseCSV, uploads.collegeData);
+app.post('/uploads/enrollmentData', uploads.parseCSV, uploads.enrollmentData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
