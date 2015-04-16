@@ -67,7 +67,11 @@ exports.getEnrollmentData = function(req, res, next) {
             } else {
                 mongoose.connection.close();
                 //console.log(doc.enrollment);
-                res.send(doc.enrollment);
+                if (doc.enrollment) {
+                    res.send(doc.enrollment);
+                } else {
+                    console.log('This college does not have enrollment data');
+                }
             }
 
         })

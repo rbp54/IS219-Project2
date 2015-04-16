@@ -12,6 +12,12 @@ exports.index = function(req, res, next) {
 exports.parseCSV = function(req, res, next) {
 
     /* CSV file parser*/
+    console.log(req.files);
+    if (!req.files.myFile) {
+        res.send('No file uploaded');
+        return;
+    }
+
     fs.readFile(req.files.myFile.path, {
         encoding: 'utf-8'
     }, function(err, csvData) {
