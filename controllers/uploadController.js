@@ -92,13 +92,17 @@ var enrollmentHelper = function(unitId, data, row) {
 
     College.findOne({UNITID: unitId}, function(err, doc) {
 
+        //doc.enrollment = {
+        //    total: data[row][6],
+        //    male: data[row][8],
+        //    female: data[row][10]
+        //};
         doc.enrollment = {
-            2013: {
-                total: data[row][6],
-                male: data[row][8],
-                female: data[row][10]
-            }
+            //'total': [data[row][6]],
+            'male': [data[row][8]],
+            'female': [data[row][10]]
         };
+        //doc.enrollment = undefined;
 
         doc.save();
     });
