@@ -21,12 +21,17 @@ exports.getCollegeById = function(req, res, next) {
         if (err) {
             console.log('err', err);
         } else {
-            delete college._id;
-            delete college.__v;
+            if (!college) {
+                res.send('_id: ' + id + ' not found in db.');
+                res.end();
+            } else {
+                delete college._id;
+                delete college.__v;
 
-            res.render('college', {
-                college: college
-            })
+                res.render('college', {
+                    college: college
+                })
+            }
         }
     });
 };
@@ -41,7 +46,8 @@ exports.getEnrollmentData = function(req, res, next) {
             if (doc.enrollment) {
                 res.send(doc.enrollment);
             } else {
-                console.log('This college does not have enrollment data');
+                res.send('This college does not have enrollment data');
+                res.end();
             }
         }
     });
