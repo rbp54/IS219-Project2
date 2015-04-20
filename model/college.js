@@ -73,7 +73,8 @@ var collegeSchema = new mongoose.Schema({
     CNGDSTCD: Number,
     LONGITUD: Number,
     LATITUDE: Number,
-    enrollment: Object
+    enrollment: Object,
+    tuition: Array
 });
 
 var College = mongoose.model('College', collegeSchema);

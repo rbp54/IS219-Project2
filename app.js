@@ -30,12 +30,14 @@ app.use(multer());
 
 app.use('/', routes);
 app.use('/colleges/:id/enrollment', colleges.getEnrollmentData);
+app.use('/colleges/:id/tuition', colleges.getTuitionData);
 app.use('/colleges/:id', colleges.getCollegeById);
 app.use('/colleges', colleges.index);
 app.use('/upload', uploads.index);
 
 app.post('/uploads/collegeData', uploads.parseCSV, uploads.collegeData);
 app.post('/uploads/enrollmentData', uploads.parseCSV, uploads.enrollmentData);
+app.post('/uploads/tuitionData', uploads.parseCSV, uploads.tuitionData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -69,12 +71,22 @@ app.use(function(err, req, res, next) {
 });
 
 
+mongoose.connect('mongodb://localhost/colleges');
+
 var server = app.listen(3000, function () {
 
     var host = server.address().address;
     var port = server.address().port;
 
     console.log('Project2 listening at http://%s:%s', host, port)
+});
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', function() {
+    mongoose.connection.close(function () {
+        console.log('Mongoose default connection disconnected through app termination');
+        process.exit(0);
+    });
 });
 
 module.exports = app;

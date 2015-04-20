@@ -14,3 +14,10 @@ block content
         input#payload(type="file" name="myFile")
         br
         input(type='submit')
+    hr
+    p Upload Tuition Data Here:
+    form#fileUpload(method="post" action="/uploads/tuitionData" enctype="multipart/form-data")
+        label(for="payload") Select a file to upload:
+        input#payload(type="file" name="myFile")
+        br
+        input(type='submit')

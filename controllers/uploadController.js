@@ -1,8 +1,5 @@
 var fs = require('fs');
 var csvParser = require('csv-parse');
-var mongoose = require('mongoose'),
-    db = mongoose.connection;
-
 var College = require('../model/college');
 
 exports.index = function(req, res, next) {
@@ -12,7 +9,6 @@ exports.index = function(req, res, next) {
 exports.parseCSV = function(req, res, next) {
 
     /* CSV file parser*/
-    console.log(req.files);
     if (!req.files.myFile) {
         res.send('No file uploaded');
         return;
@@ -41,51 +37,39 @@ exports.parseCSV = function(req, res, next) {
 exports.collegeData = function(req, res, next) {
     var data = req.parsedData;
 
-    mongoose.connect('mongodb://localhost/colleges');
+    var numRows = data.length;
+    var numCols = data[0].length;
 
-    db.once('open', function() {
+    // Row0 is the header row..
+    for (var row = 1; row < numRows; row++ ) {
+        var college = {};
 
-        var numRows = data.length;
-        var numCols = data[0].length;
-
-        // Row0 is the header row..
-        for (var row = 1; row < numRows; row++ ) {
-            var college = {};
-
-            for (var col = 0; col < numCols; col++) {
-                college[data[0][col]] = data[row][col];
-            }
-
-            var collegeDoc = new College(college);
-            collegeDoc.save();
+        for (var col = 0; col < numCols; col++) {
+            college[data[0][col]] = data[row][col];
         }
-        mongoose.connection.close();
-        res.redirect('/colleges');
-    });
+
+        var collegeDoc = new College(college);
+        collegeDoc.save();
+    }
+    res.redirect('/colleges');
 };
 
 exports.enrollmentData = function(req, res, next) {
     var data = req.parsedData;
     var numRows = data.length;
 
-    mongoose.connect('mongodb://localhost/colleges');
+    /*
+    Row0 is header row
+    Col0 is UnitID
+     */
 
-    db.once('open', function() {
+    for (var row = 1; row < numRows; row++) {
+        var unitId = data[row][0];
 
-        /*
-        Row0 is header row
-        Col0 is UnitID
-         */
+        enrollmentHelper(unitId, data, row);
+    }
 
-        for (var row = 1; row < numRows; row++) {
-            var unitId = data[row][0];
-
-            enrollmentHelper(unitId, data, row);
-        }
-
-        mongoose.connection.close();
-        res.redirect('/colleges');
-    });
+    res.redirect('/colleges');
 };
 
 var enrollmentHelper = function(unitId, data, row) {
@@ -111,5 +95,61 @@ var enrollmentHelper = function(unitId, data, row) {
         //doc.enrollment = undefined;
 
         doc.save();
+    });
+};
+
+exports.tuitionData = function(req, res, next) {
+    var data = req.parsedData;
+    var numRows = data.length;
+    var filename = req.files.myFile.originalname;
+    var year;
+
+
+    if (filename.indexOf('2013') != -1) {
+        year = 2013;
+    } else if (filename.indexOf('2012') != -1) {
+        year = 2012;
+    } else if (filename.indexOf('2011') != -1) {
+        year = 2011;
+    }
+
+    console.log(year);
+
+    /*
+     Row0 is header row
+     Col0 is UnitID
+     */
+
+    for (var row = 1; row < numRows; row++) {
+        var unitId = data[row][0];
+
+        tuitionHelper(unitId, data, row, year);
+    }
+    res.redirect('/colleges');
+};
+
+var tuitionHelper = function(unitId, data, row, year) {
+    /*
+     Col6 is Total Enrollment
+     Col8 is Male Enrollment
+     Col10 is Female Enrollment
+     */
+
+    College.findOne({UNITID: unitId}, function(err, doc) {
+        if (doc) {
+
+            if (isNaN(data[row][1])) {
+                return;
+            }
+
+            if (!doc.tuition) {
+                doc.tuition = [];
+            }
+
+            doc.tuition.push(Number(data[row][1]));
+            doc.save();
+        } else {
+            console.log('unitId:', unitId, "doesn't exist in db.")
+        }
     });
 };
