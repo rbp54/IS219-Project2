@@ -12,6 +12,7 @@ var csvParser = require('csv-parse');
 var routes = require('./routes/index');
 var colleges = require('./controllers/collegeController');
 var uploads = require('./controllers/uploadController');
+
 var app = express();
 
 
@@ -32,8 +33,13 @@ app.use('/', routes);
 app.use('/colleges/:id/enrollment', colleges.getEnrollmentData);
 app.use('/colleges/:id/tuition', colleges.getTuitionData);
 app.use('/colleges/:id', colleges.getCollegeById);
+//4/27
+app.use('/topenrollment', colleges.getTopenrollData)
+
 app.use('/colleges', colleges.index);
 app.use('/upload', uploads.index);
+app.get('/topenroll', function(req, res){res.render('topenroll.jade');});
+
 
 app.post('/uploads/collegeData', uploads.parseCSV, uploads.collegeData);
 app.post('/uploads/enrollmentData', uploads.parseCSV, uploads.enrollmentData);

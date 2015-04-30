@@ -45,6 +45,7 @@ exports.getEnrollmentData = function(req, res, next) {
         } else {
             if (doc.enrollment) {
                 res.send(doc.enrollment);
+
             } else {
                 res.send('This college does not have enrollment data');
                 res.end();
@@ -69,5 +70,43 @@ exports.getTuitionData = function(req, res, next) {
                 res.end();
             }
         }
+    });
+};
+
+//gettiing male&female data from enrollment adding them up 
+//and usig that as total enrollment data for top 10 enrolled College 
+ exports.getTopenrollData = function(req, res, next) {
+
+    College.find({}, 'enrollment', function(err, doc) {
+
+         if (err) {
+             console.log('err', err);
+        } else  if(doc){
+           var topObj={}
+            for(var i=0; i < doc.length; i++){
+                if (doc[i].enrollment) {
+                    if(doc[i].enrollment.male && doc[i].enrollment.female){
+                        topObj['college' + i] =  Number(doc[i].enrollment.male) + Number(doc[i].enrollment.female)
+                    }              
+                };
+            };
+            //converts object into array  
+            var topenrollArray  = Object.keys(topObj).map(function (key) {
+                return topObj[key]
+            });
+            //sorting array
+            var sortedArray= topenrollArray.sort(function(a, b){return b-a})
+            //getting top 10 data
+            var topten = sortedArray.slice(0, 10);
+            //make object  from array to send data
+            var topObj1={}
+            topObj1['college']=topten
+            
+            res.send(topObj1);
+        }else{
+             res.send('This college does not have enrollment data');
+             res.end();
+         }
+
     });
 };
