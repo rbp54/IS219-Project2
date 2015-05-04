@@ -29,16 +29,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer());
 
-app.use('/', routes);
-app.use('/colleges/:id/enrollment', colleges.getEnrollmentData);
-app.use('/colleges/:id/tuition', colleges.getTuitionData);
-app.use('/colleges/:id', colleges.getCollegeById);
-//4/27
-app.use('/topenrollment', colleges.getTopenrollData)
+app.get('/', routes);
+app.get('/colleges', colleges.index);
+app.get('/colleges/:id', colleges.getCollegeById);
+app.get('/colleges/:id/enrollment', colleges.getEnrollmentData);
+app.get('/colleges/:id/tuition', colleges.getTuitionData);
 
-app.use('/colleges', colleges.index);
-app.use('/upload', uploads.index);
-app.get('/topenroll', function(req, res){res.render('topenroll.jade');});
+app.get('/upload', uploads.index);
+
+app.get('/topenroll', function(req, res) {
+    res.render('topenroll');
+});
+app.get('/topenroll/topenrollment', colleges.getTopenrollData);
 
 
 app.post('/uploads/collegeData', uploads.parseCSV, uploads.collegeData);
