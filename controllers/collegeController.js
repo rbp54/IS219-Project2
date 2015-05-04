@@ -75,34 +75,53 @@ exports.getTuitionData = function(req, res, next) {
 
 //gettiing male&female data from enrollment adding them up 
 //and usig that as total enrollment data for top 10 enrolled College 
- exports.getTopenrollData = function(req, res, next) {
 
-    College.find({}, 'enrollment', function(err, doc) {
+exports.getTopenrollData = function(req, res, next) {
 
-         if (err) {
+    College.find({} ,'enrollment INSTNM', function(err, doc) {
+
+        if (err) {
              console.log('err', err);
         } else  if(doc){
-           var topObj={}
-            for(var i=0; i < doc.length; i++){
-                if (doc[i].enrollment) {
-                    if(doc[i].enrollment.male && doc[i].enrollment.female){
-                        topObj['college' + i] =  Number(doc[i].enrollment.male) + Number(doc[i].enrollment.female)
-                    }              
-                };
-            };
-            //converts object into array  
-            var topenrollArray  = Object.keys(topObj).map(function (key) {
-                return topObj[key]
-            });
-            //sorting array
-            var sortedArray= topenrollArray.sort(function(a, b){return b-a})
-            //getting top 10 data
-            var topten = sortedArray.slice(0, 10);
-            //make object  from array to send data
-            var topObj1={}
-            topObj1['college']=topten
+            //res.send(doc)
+            var topObj={}
+             for(var i=0; i < doc.length; i++){
+                 if (doc[i].enrollment) {
+                     if(doc[i].enrollment.male && doc[i].enrollment.female){
+                         topObj[doc[i].INSTNM] =  Number(doc[i].enrollment.male) + Number(doc[i].enrollment.female)
+                     }              
+                 };
+             };
+
+            var topenrollArray=[];
             
-            res.send(topObj1);
+            for(var key in topObj){
+                var tempObj = {}
+                tempObj[key] = topObj[key];
+
+                topenrollArray.push({
+                    name: key,
+                    enroll: topObj[key]
+                })
+            }
+           
+            
+            topenrollArray.sort(function(a, b) {
+                return b.enroll-a.enroll;
+            } );
+            //res.send(topenrollArray);
+            
+            var topTenArray = topenrollArray.slice(0, 10);
+
+
+            var topTenObj = {};
+            for (var i = 0; i < topTenArray.length; i++) {
+                topTenObj[topTenArray[i].name] = topTenArray[i].enroll;
+            }
+            
+            
+            res.send(topTenObj)
+           
         }else{
              res.send('This college does not have enrollment data');
              res.end();
