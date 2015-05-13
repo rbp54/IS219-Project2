@@ -7,13 +7,14 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var multer = require('multer');
 var csvParser = require('csv-parse');
-
+var requirejs = require('requirejs');
 
 var routes = require('./routes/index');
 var colleges = require('./controllers/collegeController');
 var uploads = require('./controllers/uploadController');
 
 var app = express();
+
 
 
 // view engine setup
@@ -41,6 +42,12 @@ app.get('/topenroll', function(req, res) {
     res.render('topenroll');
 });
 app.get('/topenroll/topenrollment', colleges.getTopenrollData);
+
+//5/10 QUnit
+app.get('/qunit', function(req, res) {
+    res.render('qunit');
+});
+
 
 
 app.post('/uploads/collegeData', uploads.parseCSV, uploads.collegeData);
